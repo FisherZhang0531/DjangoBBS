@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/article_temp.css' %}">
+{% endblock %}
+
+
+
+
+{% block title %}
+    <title>{{ username }}>></title>
+{% endblock %}
+
+{% block content %}
+    <!-- article div-->
+    <div class="panel panel-primary">
+        <!-- Article Title -->
+        <div class="panel-heading clearfix">
+            <h3>{{ article_obj.title }}</h3>
+            <span class="pull-right">Posted by {{ username }}@{{ article_obj.create_time }}</span>
+        </div>
+        <!-- End of Article Title -->
+        <div class="panel-body wr">
+            <!-- Article Body-->
+            {{ article_obj.content|safe }}
+            <!-- end of Article Body-->
+            <!-- Thumbs up or down -->
+            <div id="div_digg">
+                <div id="like" class="diggit like">
+                    <span class="diggnum" id="digg_count">{{ article_obj.up_num }}</span>
+                </div>
+                <div id="dislike" class="buryit like">
+                    <span class="burynum" id="bury_count">{{ article_obj.down_num }}</span>
+                </div>
+                <div class="clear"></div>
+                <div class="diggword" id="digg_tips">
+                </div>
+                <!-- end of Thumbs up or down -->
+            </div>
+        </div>
+
+
+    </div>
+    <!-- end article div-->
+
+    <!-- comments div -->
+    <div class="panel panel-primary">
+        <!-- display comment div-->
+        <div class="panel-heading" style="margin-bottom: 10px;"><h3>comments</h3></div>
+        <div class="panel-body">
+            <ul class="media-list">
+                {% for comment_obj in comment_query_set %}
+                    {% if comment_obj.parent.id == null %}
+                        <li class="media" style="border: #eeeeee solid 1px;">
+                            <div id="id_comment_{{ comment_obj.id }}" class="media">
+                                <div class="media-left">
+                                    <a>
+                                        <img height="100px" width="100px" class="media-object img-circle"
+                                             src="/media/{{ comment_obj.user.avatar }}" alt="...">
+                                        <p style="width: 100px;overflow: hidden"
+                                           class="text-center">{{ comment_obj.user.username }}</p>
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <p class="media-heading">comments
+                                        @{{ comment_obj.comment_time |date:"Y-M-d H:i:s" }}
+                                        {% if request.user.id == comment_obj.user_id %}
+                                            <span class="pull-right" style="margin:5px">
+                                            <a style="cursor: pointer" class="del glyphicon glyphicon-trash "
+                                               comment_id="{{ comment_obj.id }}"
+                                               user_id="{{ comment_obj.user_id }}">del
+                                            </a>
+                                        </span>
+                                        {% endif %}
+                                        <span class=" pull-right" style="margin:5px">
+                                            <a style="cursor: pointer" class="reply glyphicon glyphicon-comment"
+                                               comment_id="{{ comment_obj.id }}"
+                                               comment_username="{{ comment_obj.user.username }}">reply
+                                            </a>
+                                        </span>
+
+                                    </p>
+                                    <div>
+                                        {{ comment_obj.content }}
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% else %}
+                        <script>
+                            new_comment = '<li class="media" style="border: #eeeeee solid 1px;">\n' +
+                                '                            <div id="id_comment_{{ comment_obj.id }}" class="media">\n' +
+                                '                                <div class="media-left">\n' +
+                                '                                    <a>\n' +
+                                '                                        <img height="100px" width="100px" class="media-object img-circle"\n' +
+                                '                                             src="/media/{{ comment_obj.user.avatar }}" alt="...">\n' +
+                                '                                        <p style="width: 100px;overflow: hidden"\n' +
+                                '                                           class="text-center">{{ comment_obj.user.username }}</p>\n' +
+                                '                                    </a>\n' +
+                                '                                </div>\n' +
+                                '                                <div class="media-body">\n' +
+                                '                                    <p class="media-heading">comments @{{ comment_obj.comment_time |date:"Y-M-d H:i:s" }}\n' +
+                                '                                        {% if request.user.id == comment_obj.user_id %}\n'+
+                                '                                        <span class="pull-right" style="margin:5px">\n'
+                                +
+                                '                                            <a style="cursor: pointer" class="del glyphicon glyphicon-trash "\n'
+                                +
+                                '                                               comment_id="{{ comment_obj.id }}"\n'
+                                +
+                                '                                               user_id="{{ comment_obj.user_id }}">del\n'
+                                +
+                                '                                            </a>\n'+
+                                '                                        </span>\n'+
+                                '                                        {% endif %}\n' +
+                            '                                        <span class=" pull-right" style="margin:5px">\n' +
+                            '                                            <a style="cursor: pointer" class="reply glyphicon glyphicon-comment"\n' +
+                            '                                               comment_id="{{ comment_obj.id }}"\n' +
+                            '                                               comment_username="{{ comment_obj.user.username }}">reply\n' +
+                            '                                            </a>\n' +
+                            '                                        </span>\n' +
+                            '\n' +
+                            '                                    </p>\n' +
+                            '                                    <div>\n' +
+                            '                                        {{ comment_obj.content }}\n' +
+                            '                                    </div>\n' +
+                            '                                </div>\n' +
+                            '                            </div>\n' +
+                            '                        </li>'
+                            $('#id_comment_{{ comment_obj.parent_id }} > .media-body').append(new_comment)
+                        </script>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- display end comment div-->
+        <!-- leave message div-->
+        <div class="panel-footer clearfix">
+            <div class="pull-right">
+                <p class="glyphicon-comment glyphicon ">Leave Your Message</p>
+                <div>
+                    <textarea style="resize: none" id="id_comment" cols="60" rows="10"></textarea>
+                </div>
+                <button id="id_submit" class="btn btn-primary pull-right">Comment</button>
+            </div>
+        </div>
+        <!-- end leave message div -->
+    </div>
+    <!-- end comments div -->
+{% endblock %}
+
+
+{% block js %}
+    <script>
+        //resize picture for picture overflows
+        window.onload = function () {
+            var imgs = document.getElementsByTagName("img");
+            for (var i = 0; i < imgs.length; i++) {
+                imgs[i].style["max-width"] = 100 + '%';
+            }
+        }
+        window.onresize = function () {
+            var imgs = document.getElementsByTagName("img");
+            for (var i = 0; i < imgs.length; i++) {
+                imgs[i].style["max-width"] = 100 + '%';
+            }
+        }
+        //end resize picture for picture overflows
+
+        // Like or dislike
+        $('.like').click(function () {
+            let url = window.location.href
+            {#alert($(this).attr('class'))#}
+            $.ajax({
+                url: '/like/',
+                type: 'post',
+                data: {
+                    "choice": $(this).attr('id'),
+                    'article_id':{{ article_obj.id }},
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function (data) {
+                    alert(data.msg)
+                    if (data.code == 2000) {
+                        $("#digg_count").text(data.up_num)
+                        $("#bury_count").text(data.down_num)
+                    }
+                    if (data.code == 301) {
+                        window.location.href = url
+                    }
+                }
+            })
+        })
+        // end like or dislike
+
+        // leave message
+        let parentId = null
+        $('#id_submit').click(function () {
+            let content = $('#id_comment').val();
+            let url = window.location.href
+            $.ajax({
+                url: '/comment/',
+                type: 'post',
+                data: {
+                    'parent_id': parentId,
+                    'content': content,
+                    'article_id':{{ article_pk }},
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function (data) {
+                    if (data.code == 1001) {
+                        swal(data.msg, '', 'error')
+                    } else if (data.code == 301) {
+                        swal({
+                                title: data.msg,
+                                type: "info",
+                                showCancelButton: true,
+                                confirmButtonClass: "btn-primary",
+                                confirmButtonText: "Click me to login",
+                                closeOnConfirm: false
+                            },
+                            function () {
+                                window.location.href = '/login/?next=' + url
+                            })
+                    } else {
+                        swal({
+                                title: data.msg,
+                                type: "success",
+                                confirmButtonClass: "btn-primary",
+                                confirmButtonText: "Cool",
+                                closeOnConfirm: false
+                            },
+                            function () {
+                                window.location.reload()
+                            })
+                    }
+                }
+            })
+        })
+        //end leave message
+
+        //hit reply
+        let isLogin = {% if request.user.is_authenticated %} true; {% else %} false; {% endif %}
+
+
+        $('.reply').click(function () {
+            {#alert($(this).attr('comment_id') + $(this).attr('comment_username'));#}
+            let url = window.location.href
+            if (!isLogin) {
+                swal({
+                        title: 'login required to leave a message',
+                        type: "info",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn-primary",
+                        confirmButtonText: "Click me to login",
+                        closeOnConfirm: false
+                    },
+                    function () {
+                        window.location.href = '/login/?next=' + url
+                    })
+            }
+            else {
+                parentId = $(this).attr('comment_id');
+                let commentUsername = $(this).attr('comment_username');
+                //when click reply auto focus on the comment textarea and scroll to it
+                $('#id_comment').val('@' + commentUsername + '\n').focus().scrollIntoView
+            }
+        })
+        //end hit reply
+
+        //del own comment
+        $('.del').click(function () {
+            let commentId = $(this).attr("comment_id")
+            let userId = $(this).attr('user_id')
+            let removeDiv = $(this).parentsUntil($('li.media')).last().parent()
+            console.log(userId)
+            $.ajax({
+                url: '/del/comment/',
+                type: 'post',
+                data: {
+                    'comment_id': commentId,
+                    'comment_user_id': userId,
+                    'article_id':{{ article_pk }},
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function (data) {
+                    if (data.code == 2000) {
+                        swal({
+                                title: data.msg,
+                                type: "success",
+                                confirmButtonClass: "btn-primary",
+                                confirmButtonText: "confirm",
+                                closeOnConfirm: true
+                            },
+                            function () {
+                                removeDiv.remove()
+                            })
+                    } else {
+                        swal(data.msg, '', 'error')
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,42 @@
+<div class="col-md-3 visible-md visible-lg">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>Articles by Tag</h4>
+                </div>
+                <div class="panel-body list-group" style="background-color: #dff0d8">
+                    {% for tag in tag_query_set %}
+                        <a href="/blog/{{ username }}/tag/{{ tag.pk }}" class="list-group-item list-group-item-success">
+                            {{ tag.name }}
+                            <span class="badge">{{ tag.count }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>Articles by Category</h4>
+                </div>
+                <div class="panel-body list-group " style="background-color: #d9edf7">
+                    {% for category in category_query_set %}
+                        <a href="/blog/{{ username }}/category/{{ category.pk }}" class="list-group-item list-group-item-info">
+                            {{ category.name }}
+                            <span class="badge">{{ category.count }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Articles by Month</h4>
+                </div>
+                <div class="panel-body list-group" style="background-color: #fcf8e3">
+                    {% for month in month_query_set %}
+                        <a href="/blog/{{ username }}/archive/{{ month.date | date:'Y-m' }}" class="list-group-item list-group-item-warning">
+                            {{ month.date |date:'Y-M' }}
+                            <span class="badge">{{ month.count }}</span>
+                        </a>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>

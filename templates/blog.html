@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>{{ username }}'s blog</title>
+{% endblock %}
+
+{% block content %}
+    {% for article in page_query_set %}
+        <div style="background-color: #eeeeee" class="media">
+            <div class="media-left media-middle">
+                <a href="#">
+                    <img height="100px" width="100px" class="media-object img-circle"
+                         src="/media/{{ article.blog.user.avatar }}" alt="...">
+                </a>
+                <p style="width: 100px;overflow: hidden"
+                   class="text-center">{{ article.blog.user.username }}</p>
+            </div>
+            <div class="media-body">
+                <a href="/blog/{{ blog_obj.user.username }}/article/{{ article.id }}">
+                    <h3 class="media-heading">{{ article.title }}</h3>
+                </a>
+
+                <div>{{ article.description }}</div>
+                <div class="footer modal-footer">
+                    <label for="" class="glyphicon glyphicon-thumbs-up"></label>
+                    <span>({{ article.up_num }})</span>
+                    <label for="" class="glyphicon glyphicon-thumbs-down"></label>
+                    <span>({{ article.down_num }})</span>
+                    <label for="" class="glyphicon glyphicon-comment"></label>
+                    <span>({{ article.comment_num }})</span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="center-block text-center">{{ page_obj.page_html|safe }}</div>
+{% endblock %}
